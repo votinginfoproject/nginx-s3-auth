@@ -1,0 +1,30 @@
+[Unit]
+Description=nginx-s3-auth
+After=docker.service
+Requires=docker.service
+After=consul@%i.service
+Wants=consul@%i.service
+
+[Service]
+EnvironmentFile=/etc/environment
+TimeoutStartSec=10m
+TimeoutStopSec=10m
+
+Environment=DOCKER_IMAGE=
+Environment=CONTAINER=nginx-s3-auth
+Environment=HOME=/root
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/usr/bin/docker pull ${DOCKER_IMAGE}
+
+ExecStart=/bin/bash -c 'docker run --name ${CONTAINER} --restart=always \
+  --env USERNAME=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/username?raw) \
+  --env PASSWORD=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/encrypted-password?raw) \
+  --env AWS_ACCESS_KEY=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/aws-access-key?raw) \
+  --env AWS_SECRET_KEY=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/aws-secret-key?raw) \
+  --env AUTH_REALM=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/auth-realm?raw) \
+  --env S3_BUCKET=$(curl -s http://${COREOS_PRIVATE_IPV4}:8500/v1/kv/hidden/s3-bucket?raw) \
+  ${DOCKER_IMAGE}'
+
+ExecStop=/usr/bin/docker stop ${CONTAINER}
