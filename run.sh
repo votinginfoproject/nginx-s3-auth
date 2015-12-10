@@ -2,18 +2,17 @@
 
 : "${USERNAME:?You gotta set USERNAME}"
 : "${PASSWORD:?You gotta set PASSWORD}"
-: "${AWS_ACCESS_KEY:?You gotta set AWS_ACCESS_KEY}"
-: "${AWS_SECRET_KEY:?You gotta set AWS_SECRET_KEY}"
+: "${AWS_ACCESS_KEY_ID:?You gotta set AWS_ACCESS_KEY_ID}"
+: "${AWS_SECRET_ACCESS_KEY:?You gotta set AWS_SECRET_ACCESS_KEY}"
 : "${S3_BUCKET:?You gotta set S3_BUCKET}"
 : "${AUTH_REALM:?You gotta set AUTH_REALM}"
 
 echo ${USERNAME}:${PASSWORD} > /htpasswd
 
-sed -i "s/AWS_ACCESS_KEY/${AWS_ACCESS_KEY}/" /nginx.conf
-sed -i "s/AWS_SECRET_KEY/${AWS_SECRET_KEY}/" /nginx.conf
+sed -i "s/AUTH_REALM/${AUTH_REALM}/" /etc/nginx/nginx.conf
 
-sed -i "s/S3_BUCKET/${S3_BUCKET}/g" /nginx.conf
+mkdir -p /var/www/nginx-s3-auth
 
-sed -i "s/AUTH_REALM/${AUTH_REALM}/" /nginx.conf
+aws s3 sync s3://$S3_BUCKET /var/www/nginx-s3-auth
 
-/usr/local/nginx/sbin/nginx -c /nginx.conf $@
+/usr/sbin/nginx $@
