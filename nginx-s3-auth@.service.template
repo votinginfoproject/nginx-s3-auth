@@ -29,3 +29,6 @@ ExecStart=/bin/bash -c 'docker run --name ${CONTAINER} --restart=always \
   ${DOCKER_IMAGE}'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+MachineOf=consul@%i.service
