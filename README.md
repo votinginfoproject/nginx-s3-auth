@@ -19,3 +19,13 @@ other methods.
 
 Or you can run `script/deploy` after `script/build` which will submit and start
 3 instances in whatever cluster your fleetctl config is pointing at.
+
+## Deployment
+
+## Automatic
+
+Merges to `master` will automatically be deployed to production.
+
+## Manual
+
+Standard fleetctl deployment is supported.
