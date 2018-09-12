@@ -1,4 +1,4 @@
-FROM quay.io/votinginfoproject/nginx-s3-proxy:update-nginx
+FROM quay.io/votinginfoproject/nginx-s3-proxy:latest
 
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
