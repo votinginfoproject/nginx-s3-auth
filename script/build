@@ -16,7 +16,7 @@ DOCKER_IMAGE=$DOCKER_REPO:$IMAGE_TAG
 echo '--- building docker image'
 docker build -t $DOCKER_IMAGE .
 
-if [ $CI = "true" ]; then
+if [[ $CI = "true" ]]; then
     echo '--- pushing docker image to registry'
     docker login -e="." -u="${QUAY_USERNAME}" -p="${QUAY_PASSWORD}" quay.io
     docker push $DOCKER_IMAGE
